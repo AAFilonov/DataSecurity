@@ -1,16 +1,24 @@
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from crypto.tricemus_tables import TricemusEncryptor
+from crypto.simple_tables import  SimpleEncryptor
 
 
-# Press the green button in the gutter to run the script.
+def testTricemus():
+    encryptor = TricemusEncryptor("префектура", (5, 7))
+    result = encryptor.encrypt("АББАТ ТРИСЕМУС, ТАБЛИЦА.")
+    print("Encrypted text: " + result)
+    result = encryptor.decrypt(result)
+    print("Decrypted text: " + result)
+
+def testSimple():
+    encryptor = SimpleEncryptor("префектура", (3, 5))
+    result = encryptor.encrypt("АББАТ ТРИСЕМУС, ТАБЛИЦА.")
+    print("Encrypted text: " + result)
+    result = encryptor.decrypt(result)
+    print("Encrypted text: " + result)
+
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    #testTricemus()
+    testSimple()
