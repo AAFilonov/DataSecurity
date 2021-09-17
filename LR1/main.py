@@ -20,5 +20,5 @@ def testSimple():
 
 
 if __name__ == '__main__':
-    #testTricemus()
+    testTricemus()
     testSimple()
