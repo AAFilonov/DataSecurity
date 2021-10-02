@@ -2,6 +2,7 @@ package crypto;
 
 import utils.TablesUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,7 +29,7 @@ public class СeasarEncoder implements CryptoEncoder {
         printDebugInfo();
     }
 
-    private  Character[] alterAlphabet( List<Character> baseAlphabet ){
+    private Character[] alterAlphabet(List<Character> baseAlphabet) {
         Character[] alteredAlphabet = new Character[baseAlphabet.size()];
         //insert keyword
         int counter = key;
@@ -39,7 +40,7 @@ public class СeasarEncoder implements CryptoEncoder {
         }
         //insert other chars of alphabet
         for (char c : baseAlphabet) {
-            if(keyword.indexOf(c)==-1) {
+            if (keyword.indexOf(c) == -1) {
                 int index = counter % baseAlphabet.size();
                 alteredAlphabet[index] = c;
                 counter++;
@@ -50,13 +51,40 @@ public class СeasarEncoder implements CryptoEncoder {
 
     @Override
     public String encrypt(String data) {
-        return null;
+        return Arrays.stream(data.replaceAll(".(?!$)", "$0 ")
+                .split(" "))
+                .map(this::encryptChar)
+                .reduce((s, s2) -> s + s2).get();
     }
 
     @Override
     public String decrypt(String data) {
-        return null;
+        return Arrays.stream(data.replaceAll(".(?!$)", "$0 ")
+                .split(" "))
+                .map(this::decryptChar)
+                .reduce((s, s2) -> s + s2).get();
     }
+
+    private String encryptChar(String s) {
+        for (int i = 0; i < table[0].length; i++) {
+            if (table[0][i] == s.charAt(0)) {
+                System.out.printf("Ceasar encrypted char [%c] to [%c] \n", s.charAt(0), table[1][i]);
+                return String.valueOf(table[1][i]);
+            }
+        }
+        throw new RuntimeException("Char " + s.charAt(0) + " not found");
+    }
+
+    private String decryptChar(String s) {
+        for (int i = 0; i < table[0].length; i++) {
+            if (table[1][i] == s.charAt(0)) {
+                System.out.printf("Ceasar decrypted char [%c] to [%c] \n", s.charAt(0), table[0][i]);
+                return String.valueOf(table[0][i]);
+            }
+        }
+        throw new RuntimeException("Char " + s.charAt(0) + " not found");
+    }
+
 
     @Override
     public void printDebugInfo() {

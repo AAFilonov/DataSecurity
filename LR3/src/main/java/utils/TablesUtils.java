@@ -1,5 +1,7 @@
 package utils;
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +61,15 @@ public class TablesUtils {
     public static void fillByAlphabet(Character[] row, List<Character> alphabet) {
         for (int i = 0; i < alphabet.size(); i++)
             row[i] = alphabet.get(i);
+    }
+
+    public static Pair<Integer, Integer> findChar(Character c, Character[][] table) {
+        for (int i = 0; i < table.length; i++)
+            for (int j = 0; j < table[i].length; j++) {
+                if (table[i][j].equals(c))
+                    return new Pair<>(i, j);
+            }
+        throw new RuntimeException("Char " + c + " not found");
     }
 
 

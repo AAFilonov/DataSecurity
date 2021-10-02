@@ -4,8 +4,7 @@ import javafx.util.Pair;
 
 import java.util.Arrays;
 
-import static utils.TablesUtils.fillRandom;
-import static utils.TablesUtils.printTwoTable;
+import static utils.TablesUtils.*;
 
 public class WinstonEncoder implements CryptoEncoder {
     Character[][] table1;
@@ -79,13 +78,6 @@ public class WinstonEncoder implements CryptoEncoder {
     }
 
 
-    private Pair<Integer, Integer> findChar(Character c, Character[][] table) {
-        for (int i = 0; i < table.length; i++)
-            for (int j = 0; j < table[i].length; j++) {
-                if (table[i][j].equals(c))
-                    return new Pair<>(i, j);
-            }
-        throw new RuntimeException("Char " + c + " not found");
-    }
+
 
 }
