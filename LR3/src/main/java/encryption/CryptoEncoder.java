@@ -1,4 +1,4 @@
-package crypto;
+package encryption;
 
 import java.util.ArrayList;
 import java.util.Arrays;

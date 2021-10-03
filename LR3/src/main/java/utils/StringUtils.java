@@ -16,4 +16,14 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+
+
+    public static String castToAlphabet(String data, List<Character> alphabet){
+        return Arrays.stream(data.replaceAll(".(?!$)", "$0 ")
+                .split(" "))
+                .filter(value -> alphabet.contains(value.charAt(0)))
+                .reduce((s, s2) -> s + s2).get();
+    }
+
 }

@@ -1,9 +1,10 @@
-package crypto;
+package encryption;
 
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import utils.StringUtils;
 
 class СeasarEncoderTest {
 
@@ -34,4 +35,14 @@ class СeasarEncoderTest {
 
         Assertions.assertEquals("abc",decodedData);
     }
+
+    @Test
+    public void testCastToAlphabet() {
+        var data = "a`bc&336";
+        var decodedData = StringUtils.castToAlphabet(data,CryptoEncoder.baseAlphabetEN);
+
+        Assertions.assertEquals("abc",decodedData);
+    }
+
+
 }
