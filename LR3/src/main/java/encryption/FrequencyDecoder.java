@@ -15,7 +15,11 @@ public class FrequencyDecoder implements CryptoDecoder {
 
     List<Character> baseAlphabet;
 
-    List<String> keywords = new ArrayList( List.of("Salad, potato, shirt"));
+    ArrayList<String> keywords = new ArrayList( Arrays.asList(
+            "Salad", "potato", "shirt","intimidated","competitive",
+            "fish","atomic","venice","courtesan","gypsy",
+            "holograph","volumenometer","xylotherapy","schoenabatic","vedalia",
+            "bisulcate","cervelat","thigmotropism","zoochemistry","iconomachy"));
     List<Integer> keys = List.of(6);
 
     public FrequencyDecoder(List<Character> baseAlphabet, String pathToAlbphabetExample) throws IOException {
@@ -35,16 +39,18 @@ public class FrequencyDecoder implements CryptoDecoder {
     }
 
 
-    public void doHack(String data) {
+    public String doHack(String data) {
         data = data.toLowerCase(Locale.ROOT);
 
-        Pair<String, Double> bestKeyword = new Pair<>(keywords.get(0), Double.MAX_VALUE);
+        Pair<String, Double> bestKeyword = new Pair<>(keywords.get(0), 0.0);
         for (String keyword : keywords) {
             double difference = checkKey(data, keyword, keys.get(0));
-            if (bestKeyword.getValue().compareTo(difference) < 0)
+            System.out.println("Проверка ключа "+ keyword+": "+difference );
+            if (difference > bestKeyword.getValue()  )
                 bestKeyword = new Pair<>(keyword, difference);
         }
-        String.format("%sРазница составляет %s", System.out.printf("Лучшее совпадение по ключевому слову - %s%n", bestKeyword.getKey()), bestKeyword.getValue());
+       System.out.printf("Лучшее совпадение по ключевому слову - %s%n", bestKeyword.getKey(), bestKeyword.getValue());;
+       return  bestKeyword.getKey();
     }
 
 

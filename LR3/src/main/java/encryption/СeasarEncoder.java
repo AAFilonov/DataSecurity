@@ -29,7 +29,7 @@ public class СeasarEncoder implements CryptoEncoder {
     public void init(List<Character> baseAlphabet) {
         fillByAlphabet(table[0], baseAlphabet);
         fillByAlphabet(table[1], alterAlphabet(baseAlphabet));
-        printDebugInfo();
+        //printDebugInfo();
     }
 
     private Character[] alterAlphabet(List<Character> baseAlphabet) {
@@ -55,10 +55,10 @@ public class СeasarEncoder implements CryptoEncoder {
     @Override
     public String encrypt(String data) {
         data = data.replaceAll("\n", " ");
-       // data = StringUtils.castToAlphabet(data.toLowerCase(), baseAlphabet);
+        data = StringUtils.castToAlphabet(data.toLowerCase(), baseAlphabet);
 
-        return Arrays.stream(data.replaceAll(".(?!$)", "$0 ")
-                .split(" "))
+        return Arrays.stream(data.replaceAll(".(?!$)", "$0|")
+                .split("|"))
                 .map(this::encryptChar)
                 .reduce((s, s2) -> s + s2).get();
     }
@@ -66,8 +66,8 @@ public class СeasarEncoder implements CryptoEncoder {
 
     @Override
     public String decrypt(String data) {
-        return Arrays.stream(data.replaceAll(".(?!$)", "$0 ")
-                .split(" "))
+        return Arrays.stream(data.replaceAll(".(?!$)", "$0|")
+                .split("|"))
                 .map(this::decryptChar)
                 .reduce((s, s2) -> s + s2).get();
     }
@@ -76,7 +76,7 @@ public class СeasarEncoder implements CryptoEncoder {
         for (int i = 0; i < table[0].length; i++) {
 
             if (!s.equals("") &&table[0][i] == s.charAt(0)) {
-                System.out.printf("Ceasar encrypted char [%c] to [%c] \n", s.charAt(0), table[1][i]);
+             //   System.out.printf("Ceasar encrypted char [%c] to [%c] \n", s.charAt(0), table[1][i]);
                 return String.valueOf(table[1][i]);
             }
         }
@@ -87,7 +87,7 @@ public class СeasarEncoder implements CryptoEncoder {
     private String decryptChar(String s) {
         for (int i = 0; i < table[0].length; i++) {
             if (!s.equals("") &&table[1][i] == s.charAt(0)) {
-                System.out.printf("Ceasar decrypted char [%c] to [%c] \n", s.charAt(0), table[0][i]);
+               // System.out.printf("Ceasar decrypted char [%c] to [%c] \n", s.charAt(0), table[0][i]);
                 return String.valueOf(table[0][i]);
             }
         }
