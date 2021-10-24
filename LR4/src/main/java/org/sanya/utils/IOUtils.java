@@ -24,11 +24,5 @@ public class IOUtils {
         Files.write(path, Collections.singleton(data));
     }
 
-    public static String toBinaryString(byte[] bytes) {
-        String output = "";
-        for (byte aByte : bytes) {
-            output+= Integer.toBinaryString(aByte)+" ";
-        }
-        return output;
-    }
+
 }

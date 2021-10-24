@@ -12,14 +12,17 @@ public class FibonachiGenerator implements RandomGenerator<Integer> {
 
     }
 
-
     @Override
     public Integer next() {
         //Генерируем случ. величины
         var startSequence = generateSequence();
         Integer Res = generateValue(startSequence);
-        System.out.println(" Сгенерировано значение:" + Res);
         return Res;
+    }
+
+    @Override
+    public void setSeed(Integer seed) {
+        randomGenerator.setSeed(seed);
     }
 
     private Integer generateValue(Integer[] startSequence) {

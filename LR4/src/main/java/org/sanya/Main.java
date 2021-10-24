@@ -12,7 +12,7 @@ import org.sanya.lab4.FibonachiGenerator;
 public class Main {
     public static void main(String[] args) {
 
-        CongruentGenerator congruentGenerator = new CongruentGenerator(1664525, 1, (int) Math.pow(2, 24), 0);
+        CongruentGenerator congruentGenerator = new CongruentGenerator( 0);
         FibonachiGenerator fibonachiGenerator = new FibonachiGenerator(17, 5, congruentGenerator);
     }
 }

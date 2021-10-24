@@ -9,7 +9,10 @@ class FlowEncoderTest {
 
     @Test
     public void translateTest() {
-        var flowEncoder = new FlowEncoder(new ByteEncoder(), new ByteConverter(Charset.defaultCharset()));
+        CongruentGenerator congruentGenerator = new CongruentGenerator(1664525, 1, (int) Math.pow(2, 24), 0);
+        FibonachiGenerator fibonachiGenerator = new FibonachiGenerator(17, 5, congruentGenerator);
+        ByteEncoder byteEncoder = new ByteEncoder(new GammaGenerator(fibonachiGenerator));
+        var flowEncoder = new FlowEncoder(byteEncoder, new ByteConverter(Charset.defaultCharset()));
         flowEncoder.runTranslation();
 
     }

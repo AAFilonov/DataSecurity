@@ -1,6 +1,7 @@
 package org.sanya.lab4;
 
 import org.sanya.utils.ByteConverter;
+import org.sanya.utils.ByteUtils;
 import org.sanya.utils.IOUtils;
 
 public class FlowEncoder {
@@ -20,15 +21,22 @@ public class FlowEncoder {
     public void runTranslation() {
 
         String input_data = IOUtils.read(inputFile);
+        System.out.println("Input data:\n"+input_data);
 
         byte[] input_bytes = converter.toBytes(input_data);
-        IOUtils.write(inputBytesFile, IOUtils.toBinaryString(input_bytes));
+        doLog(ByteUtils.toBinaryString(input_bytes), inputBytesFile, "Input bytes:\n");
 
         byte[] encoded_bytes = encoder.encode(input_bytes);
-        IOUtils.write(outputBytesFile, IOUtils.toBinaryString(input_bytes));
+        doLog(ByteUtils.toBinaryString(encoded_bytes), outputBytesFile, "Encoded bytes:\n");
 
         String encoded_string = converter.fromBytes(encoded_bytes);
-        IOUtils.write(outputFile, encoded_string);
-
+        doLog(encoded_string, outputFile, "Encoded data:\n");
     }
+
+    private void doLog(String data, String outputFile, String commentary) {
+        IOUtils.write(outputFile, data);
+        System.out.println(commentary + data);
+    }
+
+
 }
