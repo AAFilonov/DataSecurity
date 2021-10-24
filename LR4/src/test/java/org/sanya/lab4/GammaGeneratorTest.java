@@ -16,7 +16,8 @@ class GammaGeneratorTest {
 
     @RepeatedTest(10)
     public void testGenerate() {
-        System.out.println("index:" +gammaGenerator.gammaIndex);
+
         System.out.println("byte:" +gammaGenerator.getGammaByte());
+        //System.out.println("index:" +gammaGenerator.gammaIndex);
     }
 }

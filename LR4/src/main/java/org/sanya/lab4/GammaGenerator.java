@@ -4,7 +4,7 @@ import org.sanya.utils.ByteUtils;
 
 public class GammaGenerator {
     RandomGenerator<Integer> randomGenerator;
-    int gammaIndex = 0;
+    private int gammaIndex = 0;
     private byte[] roundGamma;
 
     public GammaGenerator(RandomGenerator<Integer> randomGenerator) {
@@ -15,21 +15,18 @@ public class GammaGenerator {
 
     public byte getGammaByte() {
         if (gammaIndex < roundGamma.length ) {
-            var gammaByte = roundGamma[gammaIndex];
-            gammaIndex++;
-            return gammaByte;
+
+            return roundGamma[gammaIndex++];
 
         } else {
             startNewRound();
-            var gammaByte = roundGamma[gammaIndex];
-            gammaIndex++;
-            return gammaByte;
+            return roundGamma[gammaIndex++];
         }
 
     }
 
     private void startNewRound() {
         gammaIndex = 0;
-       // roundGamma = ByteUtils.toBytes(randomGenerator.next());
+        roundGamma = ByteUtils.toBytes(randomGenerator.next());
     }
 }
