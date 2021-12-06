@@ -1,6 +1,6 @@
 package org.sanya.lab4;
 
-public class CongruentGenerator implements RandomGenerator<Integer> {
+public class CongruentGenerator implements RandomGenerator<Integer,Integer> {
     private Integer a, b, m;
     private Integer lastValue;
 

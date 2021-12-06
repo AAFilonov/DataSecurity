@@ -1,6 +1,6 @@
 package org.sanya.lab4;
 
-public interface RandomGenerator<T> {
+public interface RandomGenerator<T,S> {
     public T next();
-    public void setSeed(T seed);
+    public void setSeed(S seed);
 }

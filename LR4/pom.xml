@@ -25,6 +25,10 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+
+        </dependency>
     </dependencies>
 
 </project>

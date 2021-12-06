@@ -1,5 +1,7 @@
 package org.sanya.lab4;
 
+import org.sanya.utils.ByteUtils;
+
 public class ByteEncoder {
     GammaGenerator gammaGenerator;
 
@@ -20,11 +22,11 @@ public class ByteEncoder {
 
         var result = (byte) (aByte ^ gamma);
         System.out.println(
-                Integer.toBinaryString(aByte)
+                ByteUtils.toBinaryString(aByte)
                         + "^"
-                        + Integer.toBinaryString(gamma)
+                        + ByteUtils.toBinaryString(gamma)
                         + "=="
-                        + Integer.toBinaryString(result));
+                        + ByteUtils.toBinaryString(result));
         return result;
 
 

@@ -3,14 +3,13 @@ package org.sanya.lab4;
 import org.sanya.utils.ByteUtils;
 
 public class GammaGenerator {
-    RandomGenerator<Integer> randomGenerator;
+    RandomGenerator<Double,Integer> randomGenerator;
     private int gammaIndex = 0;
     private byte[] roundGamma;
 
-    public GammaGenerator(RandomGenerator<Integer> randomGenerator) {
+    public GammaGenerator(RandomGenerator<Double,Integer> randomGenerator) {
         this.randomGenerator = randomGenerator;
         startNewRound();
-        roundGamma = ByteUtils.toBytes(randomGenerator.next());
     }
 
     public byte getGammaByte() {
@@ -27,6 +26,12 @@ public class GammaGenerator {
 
     private void startNewRound() {
         gammaIndex = 0;
-        roundGamma = ByteUtils.toBytes(randomGenerator.next());
+        roundGamma = getNewGamma();
+    }
+
+    private  byte[] getNewGamma(){
+        double generatedValue = randomGenerator.next();
+        int integerValue =(int)(generatedValue*Math.pow(10,7));
+        return ByteUtils.toBytes(integerValue);
     }
 }
