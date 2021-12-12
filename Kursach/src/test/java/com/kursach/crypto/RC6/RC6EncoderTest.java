@@ -1,11 +1,9 @@
-package com.kursach.crypto.RS6;
+package com.kursach.crypto.RC6;
 
 import com.kursach.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class RC6EncoderTest {
     private final RC6Encoder encoder =new RC6Encoder(new RoundRunner(),new KeyInitializer());

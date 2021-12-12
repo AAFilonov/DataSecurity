@@ -1,4 +1,4 @@
-package com.kursach.crypto.RS6;
+package com.kursach.crypto.RC6;
 
 import com.kursach.utils.StringToByteConverter;
 import org.springframework.beans.factory.annotation.Value;

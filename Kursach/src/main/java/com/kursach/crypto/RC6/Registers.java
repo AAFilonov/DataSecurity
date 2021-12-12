@@ -1,4 +1,4 @@
-package com.kursach.crypto.RS6;
+package com.kursach.crypto.RC6;
 
 public class Registers {
     public int A, B, C, D;
