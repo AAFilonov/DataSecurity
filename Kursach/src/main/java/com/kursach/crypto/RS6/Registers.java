@@ -2,7 +2,8 @@ package com.kursach.crypto.RS6;
 
 public class Registers {
     public int A, B, C, D;
-    Registers(byte[] block){
+
+    Registers(byte[] block) {
         init(block);
     }
 
@@ -12,6 +13,7 @@ public class Registers {
         this.B = ((block[index++] & 0xff) | (block[index++] & 0xff) << 8 | (block[index++] & 0xff) << 16 | (block[index++] & 0xff) << 24);
         this.C = ((block[index++] & 0xff) | (block[index++] & 0xff) << 8 | (block[index++] & 0xff) << 16 | (block[index++] & 0xff) << 24);
         this.D = ((block[index++] & 0xff) | (block[index++] & 0xff) << 8 | (block[index++] & 0xff) << 16 | (block[index++] & 0xff) << 24);
+
     }
 
     public byte[] toByteArray(int wordSize) {
@@ -29,4 +31,13 @@ public class Registers {
         return text;
     }
 
+    @Override
+    public String toString() {
+        return "Registers{" +
+                "A=" + A +
+                ", B=" + B +
+                ", C=" + C +
+                ", D=" + D +
+                '}';
+    }
 }
