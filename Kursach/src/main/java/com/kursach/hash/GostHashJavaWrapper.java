@@ -19,7 +19,7 @@ public class GostHashJavaWrapper {
             javaHash.done();
         }
     }
-
+//TODO покрыть шаги вычсления хэша логированием
     @SneakyThrows
     public static String hash(String input) {
         var bytes = hash(input.getBytes("UTF-8"));
