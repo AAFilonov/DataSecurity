@@ -20,7 +20,7 @@ public class AppController {
         Map<String, String> properties = new TreeMap<>();
         properties.put("port", port);
         properties.put("host", host);
-        model.addAttribute("appProperties", properties);
+      //  model.addAttribute("appProperties", properties);
         return "index";
     }
 }
