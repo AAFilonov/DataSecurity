@@ -1,4 +1,5 @@
 package com.kursach.kursach.controller;
+
 import com.kursach.kursach.dto.HashRequestDto;
 import com.kursach.kursach.service.HashService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,9 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/hash")
+@RequestMapping(HashController.ROOT)
 public class HashController {
-   private final  HashService hashService;
+    final static String ROOT = "/api/hash";
+    private final HashService hashService;
 
     public HashController(HashService hashService) {
         this.hashService = hashService;
@@ -18,7 +20,7 @@ public class HashController {
 
     @PostMapping
     public String post(@RequestBody HashRequestDto req) {
-        return  hashService.calcHash(req.getData());
+        return hashService.calcHash(req.getData());
     }
     //TODO подключить логирование
 }

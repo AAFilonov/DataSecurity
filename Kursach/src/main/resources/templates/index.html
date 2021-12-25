@@ -39,6 +39,7 @@
                         description="Введите текст для выполнения хэширования"
                         label="Данные:"
                 >
+
                     <b-form-textarea
                             id="textarea-input"
                             v-model="input"
@@ -69,8 +70,11 @@
 
 
     </b-container>
+    <input id="port"  type="hidden" name="userName" value="" th:value="${appProperties.get('port')}">
+    <input id="host" type="hidden" name="userName" value="" th:value="${appProperties.get('host')}">
+    <input id="controller"    type="hidden" name="userName" value="" th:value="${appProperties.get('controller')}">
 </div>
-</div>
+
 
 <script>
 
@@ -80,13 +84,15 @@
         data: {
             input: '',
             result: '',
-
+            port: '',
+            host: '',
+            controller: '',
 
         },
         watch: {
             input: {
                 handler: async function (val) {
-                    const response = await axios.post('http://localhost:8090/api/hash',
+                    const response = await axios.post('http://'+this.host+':'+this.port+this.controller,
                         {
                             data: this.input
                         })
@@ -108,11 +114,17 @@
             showResult() {
                 return this.input.length > 0 ? true : false
             }
+        },
+        created(){
+            this.port  = document.querySelector('#port').value
+            this.host  = document.querySelector('#host').value
+            this.controller  = document.querySelector('#controller').value
         }
     })
 
 
 </script>
+
 
 </body>
 </html>
