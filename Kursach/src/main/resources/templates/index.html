@@ -19,11 +19,9 @@
             href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
     />
 
-    <!-- Load polyfills to support older browsers -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
-
     <!-- Required scripts -->
     <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 </head>
 <body>
@@ -51,14 +49,13 @@
                             v-on:edit=""
                     ></b-form-textarea>
                 </b-form-group>
-                <b-form-group   horizontal
-                                :label-cols="4"
-                                label="Хэшированный текст:"
-                                v-if="showResult">
+                <b-form-group horizontal
+                              :label-cols="4"
+                              label="Хэшированный текст:"
+                              v-if="showResult">
 
                     <b-form-textarea
                             id="textarea-output"
-                            v-model="output"
                             size="lg"
                             placeholder="Enter something..."
                             rows="3"
@@ -76,26 +73,45 @@
 </div>
 
 <script>
+
+
     window.app = new Vue({
         el: '#app',
         data: {
             input: '',
+            result: '',
 
 
         },
+        watch: {
+            input: {
+                handler: async function (val) {
+                    const response = await axios.post('http://localhost:8090/api/hash',
+                        {
+                            data: this.input
+                        })
+                        .catch(function (error) {
+                            console.log(error)
+                            this.result = "Server error"
+                        })
+                    const element = document.querySelector('#textarea-output');
+                    element.innerHTML = response.data
+                    // return
 
+                },
+                deep: true
+
+                ,
+            }
+        },
         computed: {
             showResult() {
                 return this.input.length > 0 ? true : false
-            },
-            output: {
-                get: function () {
-                    return "Хэш: " + this.input
-                    //TODO делать запрос на бэкэнд
-                },
             }
         }
     })
+
+
 </script>
 
 </body>
