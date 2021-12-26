@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+
 
 @RestController
 @RequestMapping(HashController.ROOT)
@@ -22,5 +24,9 @@ public class HashController {
     public String post(@RequestBody HashRequestDto req) {
         return hashService.calcHash(req.getData());
     }
-    //TODO подключить логирование
+
+    @PostMapping("/upload")
+    public String post(@RequestBody File req) {
+        return hashService.calcHash(req);
+    }
 }

@@ -1,6 +1,6 @@
 package com.kursach.kursach.service;
 
-import com.kursach.hash.GostHashJava;
+import com.kursach.hash.GostHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import static com.kursach.utils.StringToByteConverter.bytesToHex;
 
 @Service
 public class HashService {
-    private static GostHashJava javaHash = new GostHashJava();
+    private static GostHash javaHash = new GostHash();
     private final static Logger log = LoggerFactory.getLogger(HashService.class);
 
     public String calcHash(String data) {
@@ -23,17 +23,17 @@ public class HashService {
         var data_bytes = data.getBytes(StandardCharsets.UTF_8);
         javaHash.init();
         var bytes = javaHash.calcHash(new ByteArrayInputStream(data_bytes));
-        javaHash.finishHash();
         log.info("Hashing result: {}", bytesToHex(bytes));
         return bytesToHex(bytes);
     }
 
-    public static byte[] calcHash(File file) {
+    public String calcHash(File file) {
+        log.info("File to hash: {}", file);
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             javaHash.init();
             var output = javaHash.calcHash(fileInputStream);
-            javaHash.finishHash();
-            return output;
+            log.info("Hashing result: {}", bytesToHex(output));
+            return bytesToHex(output);
         } catch (IOException x) {
             throw new RuntimeException("Failed to create FileInputStream", x);
         }

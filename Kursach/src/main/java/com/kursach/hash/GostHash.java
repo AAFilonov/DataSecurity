@@ -1,105 +1,15 @@
-// $Id: GostHashJava.java 45536 2013-04-08 13:23:58Z zinal $
 package com.kursach.hash;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Реализация расчета хеш-суммы ГОСТ 34.11-94 на Java.
- *
- * @author zinal
- * @since 2011-01-13
- */
-public class GostHashJava{
+import static com.kursach.hash.HashUtils.*;
 
-    private final static long TOP_UINT = 0xFFFFFFFFL + 1L;
+public class GostHash implements Hash {
 
-    static long int2ulong(int n) {
-        if (n >= 0)
-            return (long) n;
-        return TOP_UINT + n;
-    }
-
-    private final static int TOP_UBYTE = 0xFF + 1;
-
-    static int byte2uint(byte n) {
-        if (n >= 0)
-            return (int) n;
-        return TOP_UBYTE + n;
-    }
-
-    //----------------------------------------------------------------------------------
-
-    /* Xor two sequences of bytes */
-    static void xor_blocks(byte[] result, byte[] a, byte[] b, int bstart, int len) {
-        int i;
-        for (i = 0; i < len; ++i)
-            result[i] = (byte) (a[i] ^ b[bstart + i]);
-    }
-
-    static void swap_bytes(byte[] w, byte[] k) {
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 8; ++j)
-                k[i + 4 * j] = w[8 * i + j];
-        }
-    }
-
-    /* was A_A */
-    static void circle_xor8(byte[] w, byte[] k) {
-        circle_xor8(w, 0, k);
-    }
-
-    static void circle_xor8(byte[] w, int wstart, byte[] k) {
-        final byte[] buf = new byte[8];
-        System.arraycopy(w, wstart, buf, 0, 8);
-        System.arraycopy(w, wstart + 8, k, 0, 24);
-        for (int i = 0; i < 8; ++i)
-            k[i + 24] = (byte) (buf[i] ^ k[i]);
-    }
-
-    /* was R_R */
-    static void transform_3(byte[] data) {
-        final int acc =
-                (byte2uint(data[0]) ^ byte2uint(data[2]) ^
-                        byte2uint(data[4]) ^ byte2uint(data[6]) ^
-                        byte2uint(data[24]) ^ byte2uint(data[30])) |
-                        ((byte2uint(data[1]) ^ byte2uint(data[3]) ^
-                                byte2uint(data[5]) ^ byte2uint(data[7]) ^
-                                byte2uint(data[25]) ^ byte2uint(data[31])) << 8);
-        System.arraycopy(data, 2, data, 0, 30);
-        data[30] = (byte) (acc & 0xff);
-        data[31] = (byte) (acc >>> 8);
-    }
-
-    /* Adds blocks of N bytes modulo 2**(8*n). Returns carry*/
-    static int addBlocks(int n, byte[] left, byte[] right, int rightPos) {
-        int i;
-        int carry = 0;
-        int sum;
-        for (i = 0; i < n; i++) {
-            sum = byte2uint(left[i]) + byte2uint(right[rightPos + i]) + carry;
-            left[i] = (byte) (sum & 0xff);
-            carry = sum >>> 8;
-        }
-        return carry;
-    }
-
-    //----------------------------------------------------------------------------------
-
-    /* Internal representation of GOST substitution blocks */
-    private static final class GostSubstBlock {
-        final byte k8[] = new byte[16];
-        final byte k7[] = new byte[16];
-        final byte k6[] = new byte[16];
-        final byte k5[] = new byte[16];
-        final byte k4[] = new byte[16];
-        final byte k3[] = new byte[16];
-        final byte k2[] = new byte[16];
-        final byte k1[] = new byte[16];
-    }
 
     /* Substitution blocks for hash function 1.2.643.2.9.1.6.1  */
-    private final static GostSubstBlock GostR3411_94_CryptoProParamSet = new GostSubstBlock();
+    private final static SubstitutionBlock GostR3411_94_CryptoProParamSet = new SubstitutionBlock();
 
     static {
         byte[] k8 = new byte[]{0x1, 0x3, 0xA, 0x9, 0x5, 0xB, 0x4, 0xF, 0x8, 0x6, 0x7, 0xE, 0xD, 0x0, 0x2, 0xC};
@@ -124,7 +34,7 @@ public class GostHashJava{
     ;
 
     /* Cipher context includes key and preprocessed  substitution block */
-    private final static class GostCtx {
+    private final static class GostContext {
         final int k[] = new int[8];
         /* Constant s-boxes -- set up in gost_init(). */
         final int k87[] = new int[256];
@@ -132,7 +42,7 @@ public class GostHashJava{
         final int k43[] = new int[256];
         final int k21[] = new int[256];
 
-        void init(GostSubstBlock b) {
+        void init(SubstitutionBlock b) {
             for (int i = 0; i < 256; i++) {
                 k87[i] = (b.k8[i >>> 4] << 4 | b.k7[i & 15]) << 24;
                 k65[i] = (b.k6[i >>> 4] << 4 | b.k5[i & 15]) << 16;
@@ -233,7 +143,7 @@ public class GostHashJava{
 
     private final static class GostHashCtx {
         long len = 0;
-        GostCtx cipher_ctx = null;
+        GostContext cipher_ctx = null;
         int left = 0;
         final byte H[] = new byte[32];
         final byte S[] = new byte[32];
@@ -243,7 +153,7 @@ public class GostHashJava{
          * Initialize gost_hash ctx - cleans up temporary structures and
          * set up substitution blocks
          */
-        void init(GostSubstBlock subst_block) {
+        void init(SubstitutionBlock subst_block) {
             len = 0;
             cipher_ctx = null;
             left = 0;
@@ -251,7 +161,7 @@ public class GostHashJava{
             java.util.Arrays.fill(S, (byte) 0);
             java.util.Arrays.fill(remainder, (byte) 0);
 
-            cipher_ctx = new GostCtx();
+            cipher_ctx = new GostContext();
             cipher_ctx.init(subst_block);
         }
 
@@ -297,14 +207,6 @@ public class GostHashJava{
                 left = lastPos - pos;
                 System.arraycopy(block, pos, remainder, 0, left);
             }
-        }
-
-        final void hashBlock(byte[] data, int len) {
-            hashBlock(data, 0, len);
-        }
-
-        final void hashBlock(byte[] data) {
-            hashBlock(data, 0, data.length);
         }
 
         /**
@@ -411,34 +313,11 @@ public class GostHashJava{
 
     private GostHashCtx ctx = null;
 
-    public boolean isNative() {
-        return false;
-    }
-
     public void init() {
         final GostHashCtx tmp = new GostHashCtx();
         tmp.init(GostR3411_94_CryptoProParamSet);
         ctx = tmp;
     }
-
-    public void done() {
-        ctx = null;
-    }
-
-    public void startHash() {
-        ctx.startHash();
-    }
-
-    public void hashBlock(byte[] block, int pos, int length) {
-        if (length < 0 && block != null)
-            length = block.length;
-        ctx.hashBlock(block, pos, length);
-    }
-
-    public byte[] finishHash() {
-        return ctx.finishHash();
-    }
-
     public byte[] calcHash(InputStream input) {
         try {
             final byte[] buf = new byte[1024];
