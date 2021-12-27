@@ -1,12 +1,15 @@
 package com.kursach.hash;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import static com.kursach.hash.HashUtils.*;
 
 public class GostHash implements Hash {
-
+    private final static Logger log = LoggerFactory.getLogger(GostHash.class);
 
     /* Substitution blocks for hash function 1.2.643.2.9.1.6.1  */
     private final static SubstitutionBlock GostR3411_94_CryptoProParamSet = new SubstitutionBlock();
@@ -165,9 +168,7 @@ public class GostHash implements Hash {
             cipher_ctx.init(subst_block);
         }
 
-        /**
-         * reset state of hash context to begin hashing new message
-         */
+
         final void startHash() {
             java.util.Arrays.fill(H, (byte) 0);
             java.util.Arrays.fill(S, (byte) 0);
@@ -175,9 +176,7 @@ public class GostHash implements Hash {
             left = 0;
         }
 
-        /**
-         * Hash block of arbitrary length
-         */
+
         final void hashBlock(byte[] block, int pos, int length) {
             final int lastPos = pos + length;
             if (left > 0) {
@@ -244,27 +243,43 @@ public class GostHash implements Hash {
             return xH;
         }
 
-        final void hashStep(byte[] xH, byte[] xM, int mstart) {
+        final void hashStep(byte[] H, byte[] m, int mstart) {
             final byte[] xU = new byte[32];
             final byte[] xW = new byte[32];
             final byte[] xV = new byte[32];
             final byte[] xS = new byte[32];
             final byte[] Key = new byte[32];
-            int i;
-            /* Compute first key */
+
+            computeFirstKey(H, m, mstart, xW, Key);
+            cipher_ctx.gostEncrypt(Key, H, 0, xS, 0);
+
+            computeSecondKey(H, m, mstart, xU, xW, xV, Key);
+            cipher_ctx.gostEncrypt(Key, H, 8, xS, 8);
+
+            computeThirdKey(xU, xW, xV, Key);
+            cipher_ctx.gostEncrypt(Key, H, 16, xS, 16);
+
+            computeFourthKey(xU, xW, xV, Key);
+            cipher_ctx.gostEncrypt(Key, H, 24, xS, 24);
+
+            confoundTransform(H, m, mstart, xS);
+        }
+
+        private void computeFirstKey(byte[] xH, byte[] xM, int mstart, byte[] xW, byte[] key) {
+
             xor_blocks(xW, xH, xM, mstart, 32);
-            swap_bytes(xW, Key);
-            /* Encrypt first 8 bytes of H with first key*/
-            cipher_ctx.gostEncrypt(Key, xH, 0, xS, 0);
-            /* Compute second key*/
+            swap_bytes(xW, key);
+        }
+
+        private void computeSecondKey(byte[] xH, byte[] xM, int mstart, byte[] xU, byte[] xW, byte[] xV, byte[] Key) {
             circle_xor8(xH, xU);
             circle_xor8(xM, mstart, xV);
             circle_xor8(xV, xV);
             xor_blocks(xW, xU, xV, 0, 32);
             swap_bytes(xW, Key);
-            /* encrypt second 8 bytes of H with second key*/
-            cipher_ctx.gostEncrypt(Key, xH, 8, xS, 8);
-            /* compute third key */
+        }
+
+        private void computeThirdKey(byte[] xU, byte[] xW, byte[] xV, byte[] Key) {
             circle_xor8(xU, xU);
 
             xU[31] = (byte) ~xU[31];
@@ -288,16 +303,18 @@ public class GostHash implements Hash {
             circle_xor8(xV, xV);
             xor_blocks(xW, xU, xV, 0, 32);
             swap_bytes(xW, Key);
-            /* encrypt third 8 bytes of H with third key*/
-            cipher_ctx.gostEncrypt(Key, xH, 16, xS, 16);
-            /* Compute fourth key */
+        }
+
+        private void computeFourthKey(byte[] xU, byte[] xW, byte[] xV, byte[] Key) {
             circle_xor8(xU, xU);
             circle_xor8(xV, xV);
             circle_xor8(xV, xV);
             xor_blocks(xW, xU, xV, 0, 32);
             swap_bytes(xW, Key);
-            /* Encrypt last 8 bytes with fourth key */
-            cipher_ctx.gostEncrypt(Key, xH, 24, xS, 24);
+        }
+
+        private void confoundTransform(byte[] xH, byte[] xM, int mstart, byte[] xS) {
+            int i;
             for (i = 0; i < 12; i++)
                 transform_3(xS);
             xor_blocks(xS, xS, xM, mstart, 32);
@@ -318,7 +335,9 @@ public class GostHash implements Hash {
         tmp.init(GostR3411_94_CryptoProParamSet);
         ctx = tmp;
     }
+
     public byte[] calcHash(InputStream input) {
+        this.init();
         try {
             final byte[] buf = new byte[1024];
             ctx.startHash();

@@ -21,7 +21,6 @@ public class HashService {
     public String calcHash(String data) {
         log.info("Data to hash: {}", data);
         var data_bytes = data.getBytes(StandardCharsets.UTF_8);
-        javaHash.init();
         var bytes = javaHash.calcHash(new ByteArrayInputStream(data_bytes));
         log.info("Hashing result: {}", bytesToHex(bytes));
         return bytesToHex(bytes);
@@ -30,7 +29,6 @@ public class HashService {
     public String calcHash(File file) {
         log.info("File to hash: {}", file);
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            javaHash.init();
             var output = javaHash.calcHash(fileInputStream);
             log.info("Hashing result: {}", bytesToHex(output));
             return bytesToHex(output);
