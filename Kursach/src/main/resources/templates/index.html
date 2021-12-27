@@ -32,7 +32,7 @@
         </b-jumbotron>
         <b-row>
 
-            <b-col sm="8">
+            <b-col sm="6">
                 <b-form-group
                         horizontal
                         :label-cols="4"
@@ -64,15 +64,28 @@
                     </b-form-textarea>
                 </b-form-group>
 
-
+            </b-col>
+            <b-col sm="4">
+                <div class="card">
+                    <div class="card-body">
+                        <b-form-file
+                                @change="onFileSelect"
+                                v-model="file"
+                                :state="Boolean(file)"
+                                placeholder="Choose a file or drop it here..."
+                                drop-placeholder="Drop file here..."
+                        ></b-form-file>
+                        <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
+                    </div>
+                </div>
             </b-col>
         </b-row>
 
 
     </b-container>
-    <input id="port"  type="hidden" name="userName" value="" th:value="${appProperties.get('port')}">
+    <input id="port" type="hidden" name="userName" value="" th:value="${appProperties.get('port')}">
     <input id="host" type="hidden" name="userName" value="" th:value="${appProperties.get('host')}">
-    <input id="controller"    type="hidden" name="userName" value="" th:value="${appProperties.get('controller')}">
+    <input id="controller" type="hidden" name="userName" value="" th:value="${appProperties.get('controller')}">
 </div>
 
 
@@ -84,15 +97,33 @@
         data: {
             input: '',
             result: '',
+            file: null,
             port: '',
             host: '',
             controller: '',
 
         },
+        methods: {
+            async onFileSelect(val) {
+                this.input = ""
+                const response = await axios.post('http://' + this.host + ':' + this.port + this.controller,
+                    {
+                        data: this.filename
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        this.result = "Server error"
+                    })
+                const element = document.querySelector('#textarea-output');
+                element.innerHTML = response.data
+                // return
+
+            },
+        },
         watch: {
             input: {
                 handler: async function (val) {
-                    const response = await axios.post('http://'+this.host+':'+this.port+this.controller,
+                    const response = await axios.post('http://' + this.host + ':' + this.port + this.controller,
                         {
                             data: this.input
                         })
@@ -112,13 +143,19 @@
         },
         computed: {
             showResult() {
-                return this.input.length > 0 ? true : false
+                return this.input.length > 0 || this.filename !== ''
+            },
+            filename() {
+                if (this.file != null)
+                    return this.file.name
+                else
+                    return ''
             }
         },
-        created(){
-            this.port  = document.querySelector('#port').value
-            this.host  = document.querySelector('#host').value
-            this.controller  = document.querySelector('#controller').value
+        created() {
+            this.port = document.querySelector('#port').value
+            this.host = document.querySelector('#host').value
+            this.controller = document.querySelector('#controller').value
         }
     })
 
